@@ -156,6 +156,57 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+//get user detail
+exports.getUserDetail= catchAsyncErrors(async(req,res,next)=>{
+  const user = await User.findById(req.user.id) //all user data save in req.user in middleware in authentiaction
+
+  res.status(200).json({
+    success:true,
+    user
+  })
+}) 
+
+// update user password
+exports.updatePassword= catchAsyncErrors(async(req,res,next)=>{
+  const user = await User.findById(req.user.id || req.user.password) 
+
+  const isPasswordMatch = await user.comparePassword(req.body.oldPassword)
+  if (!isPasswordMatch){
+    return next(new ErrorHandler("oldPassword is incorrect", 404));
+  }
+
+  user.password=req.body.newPassword
+
+   await user.save()
+
+   sendToken(user, 200, res);
+
+
+});
+
+//update user data api
+exports.updateUserApi = catchAsyncErrors(async (req, res, next) => {
+
+  const updateData ={
+    firstName:req.body.firstName,
+    lastName:req.body.lastName,
+    email:req.body.email,
+    // phoneNumber:req.body.lastName,
+  };
+
+  const user = await User.findByIdAndUpdate(req.user.id ,updateData,{
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  } );
+
+res.status(200).json({
+  success: true,
+  message: "user update successfully",
+ 
+});
+});
+
 
 
 
@@ -199,7 +250,7 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 //delete user Api
 exports.deleteUser = catchAsyncErrors(async (req, res) => {
-  const deleteuser = await users.findById(req.params.id);
+  const deleteuser = await User.findById(req.params.id);
   if (!deleteuser) {
     return next(new ErrorHandler("user not found", 404));
   }
@@ -210,23 +261,4 @@ exports.deleteUser = catchAsyncErrors(async (req, res) => {
   });
 });
 
-//update user api
-exports.updateUserApi = catchAsyncErrors(async (req, res, next) => {
-  //take let because we update (updateProduct) .
-  let updateUser = await users.findById(req.params.id);
 
-  if (!updateUser) {
-    return next(new ErrorHandler("user not found", 404));
-  }
-  updateUser = await users.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: "user update successfully",
-    updateUser,
-  });
-});

@@ -9,7 +9,11 @@ const {
   logoutuser,
   forgotPassword,
   resetPassword,
+  getUserDetail,
+  updatePassword
 } = require("../controllers/userController");
+const { isAuthenticate ,adminRole } = require("../middleware/authentication");
+
 
 const router = express.Router();
 
@@ -24,12 +28,16 @@ router.route("/singleuser/:id").get(singleUser);
 //delete user route
 router.route("/delete/:id").delete(deleteUser);
 //update user route
-router.route("/update/:id").put(updateUserApi);
+router.route("/update-user").put(isAuthenticate , updateUserApi);
 //logout
 router.route("/logout").get(logoutuser);
 //forgot
 router.route("/forgot").post(forgotPassword);
-//forgot
+//reset
 router.route("/reset/:token").put(resetPassword);
+//my data api rout
+router.route("/mydata").get(isAuthenticate , getUserDetail);
+//my data api rout
+router.route("/updatePassword").put(isAuthenticate , updatePassword);
 
 module.exports = router;

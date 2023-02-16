@@ -1,7 +1,7 @@
 const products = require("../modals/Productmodal");
 const ErrorHandler = require("../utils/errorhandler");
 const catchAsyncErrors = require("../middleware/catchAsyncError") //for error
-const ApiFeatuers = require("../utils/apifeatures")
+const ApiFeatuers = require("../utils/apifeatures");
 
 
 
@@ -10,7 +10,7 @@ const ApiFeatuers = require("../utils/apifeatures")
 exports.getAllProducts = catchAsyncErrors(
   async (req, res, next) => {
 
-  const apifeatures= new ApiFeatuers(products.find(),req.query).search();
+    const apifeatures = new ApiFeatuers(products.find(), req.query).search();
     const allProducts = await apifeatures.query;
 
     res.status(200).json({
@@ -23,6 +23,9 @@ exports.getAllProducts = catchAsyncErrors(
 //Create product Api ---only admin
 exports.createProduct = catchAsyncErrors(
   async (req, res, next) => {
+
+    req.body.user = req.user.id
+
     const product = await products.create(req.body);
 
     res.status(201).json({
@@ -95,3 +98,51 @@ exports.viewsingleproduct = catchAsyncErrors(
     })
   }
 );
+
+// Create product review or upadate Api
+
+exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
+  const { rating, comment, productId } = req.body
+  const review = {
+    user: req.user._id,
+    firstName: req.user.firstName,
+    rating: Number(rating),
+    comment,
+
+  }
+  const product = await products.findById(productId);
+
+  //check whether product is reviewed or not
+
+  const isReviewed = product.reviews.find((rev) => rev.user.toString() == req.user._id.toString())
+  if (isReviewed) {
+    product.reviews.forEach(rev => {
+      if (rev.user.toString() === req.user._id.toString()) {
+        rev.rating = rating,
+          rev.comment = comment
+      }
+
+    })
+
+  } else {
+
+    product.reviews.push(review)  //use push methode to push all object in array
+     products.numOfReviews=product.reviews.lenght   //define numOfReviews
+  }
+
+  // now avarage  of reviews
+
+  let avg = 0;
+  product.ratings =product.reviews.forEach(rev=>{
+    avg=avg+rev.rating
+  })/product.reviews.lenght
+
+  //now save 
+
+  await product.save({validateBeforeSave:false})
+
+  res.status(200).json({
+    success:true,
+    message:"Review add successfully"
+  })
+})

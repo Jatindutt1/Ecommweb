@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema({
     required: [true, "please enter product price."],
     maxLenght: [8, "please can not exceed 8 character"],
   },
-  rating: {
+  ratings: {
     type: Number,
     default: 0,
   },
@@ -30,42 +30,52 @@ const productSchema = new mongoose.Schema({
       },
     },
   ],
-  category:{
-    type:String,
-    required:[true,"please add category"],
+  category: {
+    type: String,
+    required: [true, "please add category"],
   },
-  stock:{
-    type:Number,
-    required:[true,"please enter product stock"],
-    default:1,
-    
-  },
-  numOfReviews:{
-    type:Number,
-    default:0,
+  stock: {
+    type: Number,
+    required: [true, "please enter product stock"],
+    default: 1,
 
   },
-  reviews:[
+  numOfReviews: {
+    type: Number,
+    default: 0,
+
+  },
+  reviews: [
     {
-        name:{
-            type:String,
-            required:true,
-        },
-        rating:{
-            type:Number,
-            required:true,
-        },
-        comment:{
-            type:String,
-            required:true,
-        }
+      user: {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+        required: true
+      },
+      firstName: {
+        type: String,
+        required: true,
+      },
+      rating: {
+        type: Number,
+        required: true,
+      },
+      comment: {
+        type: String,
+        required: true,
+      }
     }
   ],
-  createdAt:{
-    type:Date,
-    default:Date.now
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 
-});
+},{timestamps:true});
 
-module.exports = mongoose.model("product",productSchema)
+module.exports = mongoose.model("product", productSchema)
