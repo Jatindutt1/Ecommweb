@@ -1,13 +1,15 @@
 const nodeMailer = require("nodemailer");
 
-
 const sendEmail = async(options)=>{
 
     // send mail feom my side as a transporter
     const transporter = nodeMailer.createTransport({
+        host:process.env.SMPT_HOST,
+        port:process.env.SMPT_PORT,
+        secure:true,
         service:process.env.SMPT_SERVICE,
         auth:{
-            user:process.env.SMPT_EMAIL,
+            user:process.env.SMPT_EMAIL, //SMPT : simple mail transfer protocol
             pass:process.env.SMPT_PASSWORD
         }
     });
@@ -25,3 +27,5 @@ const sendEmail = async(options)=>{
 };
 
 module.exports=sendEmail
+
+

@@ -48,14 +48,14 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpire:Date,
 
 
-});
+},{timestamps:true});
 
 //for bcrypt password change in to bcrypt form
 userSchema.pre("save", async function (next) {
 if(!this.isModified("password")){
   next();
 }
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = bcrypt.hashSync(this.password, 10);
 });
 //for match password in user login
 userSchema.methods.comparePassword = async function (enteredPassword) {
