@@ -1,8 +1,8 @@
-import './App.css';
 import Topbar from './layouts/Topbar';
 import { Route } from "react-router-dom"
-import Cards from "./component/Cards"
 import { Routes } from "react-router-dom"
+import Mainhomesection from './component/Home/Mainhomesection';
+
 
 
 
@@ -10,15 +10,12 @@ function App() {
   return (
     <>
       <Topbar />
-      
-
-        <Routes>
-          <Route path='/home' element={<Cards />} />
-
-        </Routes>
-
-
-      
+      <Routes>
+        <Route path='/' element={<Mainhomesection />} />
+      </Routes>
+      <Routes>
+        {/* <Route path='/home' element={} /> */}
+      </Routes>
     </>
 
   );
